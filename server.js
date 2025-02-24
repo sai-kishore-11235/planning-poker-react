@@ -137,6 +137,21 @@ io.on('connection', (socket) => {
   socket.on('error', (error) => {
     console.error('Socket error:', error);
   });
+
+  // Additional debugging
+  console.log('New connection established:', socket.id);
+  
+  socket.on('connect_error', (error) => {
+    console.log('Socket connect_error:', error);
+  });
+  
+  socket.on('connect_timeout', (timeout) => {
+    console.log('Socket connect_timeout:', timeout);
+  });
+  
+  socket.on('error', (error) => {
+    console.log('Socket error:', error);
+  });
 });
 
 // Error handling middleware

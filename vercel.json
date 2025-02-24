@@ -21,9 +21,10 @@
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+        "Access-Control-Allow-Headers": "*",
         "Access-Control-Allow-Credentials": "true"
-      }
+      },
+      "continue": true
     },
     {
       "src": "/health",
@@ -42,11 +43,13 @@
     },
     {
       "src": "/manifest.json",
-      "dest": "/manifest.json",
+      "dest": "/build/manifest.json",
       "headers": {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-cache",
-        "Access-Control-Allow-Origin": "*"
+        "Content-Type": "application/json; charset=utf-8",
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
       }
     },
     {
