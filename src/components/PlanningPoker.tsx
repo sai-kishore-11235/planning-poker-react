@@ -17,7 +17,10 @@ export const PlanningPoker: React.FC = () => {
   useEffect(() => {
     const newSocket = io(process.env.NODE_ENV === 'production' ? window.location.origin : 'http://localhost:3001', {
       path: '/socket.io',
-      transports: ['websocket', 'polling']
+      transports: ['polling', 'websocket'],
+      forceNew: true,
+      reconnectionAttempts: 5,
+      timeout: 10000
     });
     setSocket(newSocket);
 

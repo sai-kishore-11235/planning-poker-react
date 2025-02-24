@@ -15,13 +15,29 @@ const io = new Server(server, {
   cors: {
     origin: process.env.VERCEL_URL ? [
       `https://${process.env.VERCEL_URL}`,
-      'https://planning-poker-react-puce.vercel.app'
+      'https://planning-poker-react-puce.vercel.app',
+      'https://*.vercel.app'
     ] : ["http://localhost:3000"],
     methods: ["GET", "POST"],
     credentials: true
   },
   path: '/socket.io',
-  transports: ['websocket', 'polling']
+  transports: ['polling', 'websocket'],
+  allowEIO3: true,
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  upgradeTimeout: 30000,
+  allowUpgrades: true,
+  cookie: false
+});
+
+// Log socket.io events for debugging
+io.engine.on("connection_error", (err) => {
+  console.log("Connection error:", err);
+});
+
+io.engine.on("headers", (headers, req) => {
+  console.log("Headers:", headers);
 });
 
 let gameState = {
