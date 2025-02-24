@@ -7,11 +7,22 @@ const path = require('path');
 const app = express();
 app.use(cors());
 
+// Move this before any route handlers
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', '*');
+  next();
+});
+
 // Serve static files from the React build directory
 app.use(express.static(path.join(__dirname, 'build'), {
-  maxAge: '1y',
+  maxAge: '1h',
   etag: true,
   setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache');
+    }
     if (path.endsWith('manifest.json')) {
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,11 +34,14 @@ const server = http.createServer(app);
 const io = require('socket.io')(server, {
   cors: {
     origin: "*",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["*"],
     credentials: true
   },
-  path: '/socket.io'
+  transports: ['polling', 'websocket'],
+  path: '/socket.io/',
+  pingTimeout: 60000,
+  pingInterval: 25000
 });
 
 // Log socket.io events for debugging
@@ -159,17 +173,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something broke!' });
 });
 
-// Update the manifest.json route handler
+// Simplify manifest.json handling
 app.get('/manifest.json', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'manifest.json'), {
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'no-cache',
-      'Access-Control-Allow-Methods': 'GET',
-      'X-Content-Type-Options': 'nosniff'
-    }
-  });
+  res.sendFile(path.join(__dirname, 'build', 'manifest.json'));
 });
 
 // Update the catch-all route
