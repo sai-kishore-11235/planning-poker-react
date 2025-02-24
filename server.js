@@ -5,10 +5,16 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
+const PORT = process.env.PORT || 8080;  // Cloud Run uses PORT env variable
 
-// Update CORS configuration
+// Update CORS configuration for Cloud Run
 app.use(cors({
-  origin: '*',
+  origin: process.env.NODE_ENV === 'production' 
+    ? [
+        'https://YOUR-CLOUD-RUN-URL.run.app',  // Replace with your Cloud Run URL
+        'http://localhost:3000'
+      ] 
+    : 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   credentials: true
@@ -54,7 +60,12 @@ app.use(express.static(path.join(__dirname, 'build'), {
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
   cors: {
-    origin: "*",
+    origin: process.env.NODE_ENV === 'production'
+      ? [
+          'https://YOUR-CLOUD-RUN-URL.run.app',  // Replace with your Cloud Run URL
+          'http://localhost:3000'
+        ]
+      : 'http://localhost:3000',
     methods: ["GET", "POST"],
     allowedHeaders: ["*"],
     credentials: true
@@ -233,11 +244,14 @@ app.get('/_health', (req, res) => {
   });
 });
 
-// Only listen on port if not in Vercel
-if (!process.env.VERCEL) {
-  const PORT = process.env.PORT || 3001;
+// Update the server listen logic
+if (process.env.NODE_ENV !== 'production') {
   server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Development server running on port ${PORT}`);
+  });
+} else {
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Production server running on port ${PORT}`);
   });
 }
 

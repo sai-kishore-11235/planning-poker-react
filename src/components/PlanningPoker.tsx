@@ -15,16 +15,56 @@ export const PlanningPoker: React.FC = () => {
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
 
   useEffect(() => {
-    const newSocket = io(process.env.NODE_ENV === 'production' ? window.location.origin : 'http://localhost:3001', {
-      path: '/socket.io',
-      transports: ['polling', 'websocket'],
+    // Get Socket.IO server URL from environment variables with fallback
+    const socketUrl = window.location.hostname === 'localhost' 
+      ? process.env.REACT_APP_SOCKET_URL || 'http://localhost:8080'
+      : window.location.origin;
+    
+    console.log('Hostname:', window.location.hostname);
+    console.log('Connecting to Socket.IO server at:', socketUrl);
+    const newSocket = io(socketUrl, {
+      path: '/socket.io/',
+      transports: ['websocket', 'polling'],
       forceNew: true,
       reconnectionAttempts: 5,
-      timeout: 10000
+      timeout: 10000,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      withCredentials: true
     });
     setSocket(newSocket);
 
+    // Connection status monitoring
+    newSocket.on('connect', () => {
+      console.log('Socket connected successfully');
+    });
+
+    newSocket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+    });
+
+    newSocket.on('connect_timeout', () => {
+      console.error('Socket connection timeout');
+    });
+
+    newSocket.on('error', (error) => {
+      console.error('Socket error:', error);
+    });
+
+    newSocket.on('disconnect', (reason) => {
+      console.log('Socket disconnected:', reason);
+    });
+
+    newSocket.on('reconnect', (attemptNumber) => {
+      console.log('Socket reconnected after', attemptNumber, 'attempts');
+    });
+
+    newSocket.on('reconnect_attempt', () => {
+      console.log('Attempting to reconnect...');
+    });
+
     newSocket.on('gameState', (state: GameState) => {
+      console.log('Received game state:', state);
       setGameState(state);
       if (!state.revealed) {
         setSelectedCard(null);
@@ -32,6 +72,7 @@ export const PlanningPoker: React.FC = () => {
     });
 
     return () => {
+      console.log('Cleaning up socket connection');
       newSocket.close();
     };
   }, []);
