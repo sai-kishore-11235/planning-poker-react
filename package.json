@@ -22,11 +22,16 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server.js",
+    "dev": "react-scripts start",
     "build": "react-scripts build",
+    "vercel-build": "npm run build",
     "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!socket.io-client)/\" --coverage",
     "test:server": "jest server.test.js",
     "eject": "react-scripts eject"
+  },
+  "engines": {
+    "node": "18.x"
   },
   "eslintConfig": {
     "extends": [
