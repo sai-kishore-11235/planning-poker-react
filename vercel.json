@@ -29,7 +29,7 @@
       "dest": "/build/static/$1"
     },
     {
-      "src": "/manifest.json",
+      "src": "/asset-manifest.json",
       "dest": "/build/manifest.json"
     },
     {
