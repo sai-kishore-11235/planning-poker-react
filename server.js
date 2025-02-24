@@ -8,7 +8,10 @@ const app = express();
 app.use(cors());
 
 // Serve static files from the React build directory
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, 'build'), {
+  maxAge: '1y',
+  etag: true
+}));
 
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
@@ -150,20 +153,23 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something broke!' });
 });
 
-// Add specific route for manifest.json
+// Move this route before the catch-all route
 app.get('/manifest.json', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'manifest.json'), {
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'public, max-age=0'
+      'Access-Control-Allow-Origin': '*'
     }
   });
 });
 
-// Make sure this comes before the catch-all route
+// Update the catch-all route
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'build', 'index.html'), {
+    headers: {
+      'Cache-Control': 'no-cache'
+    }
+  });
 });
 
 // Only listen on port if not in Vercel
