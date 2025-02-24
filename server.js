@@ -173,9 +173,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something broke!' });
 });
 
-// Simplify manifest.json handling
+// Handle both manifest files
 app.get('/manifest.json', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'manifest.json'));
+});
+
+app.get('/asset-manifest.json', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'asset-manifest.json'));
 });
 
 // Update the catch-all route

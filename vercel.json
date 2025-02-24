@@ -29,8 +29,12 @@
       "dest": "/build/static/$1"
     },
     {
-      "src": "/asset-manifest.json",
+      "src": "/manifest.json",
       "dest": "/build/manifest.json"
+    },
+    {
+      "src": "/asset-manifest.json",
+      "dest": "/build/asset-manifest.json"
     },
     {
       "src": "/api/(.*)",
