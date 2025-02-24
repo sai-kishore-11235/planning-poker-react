@@ -23,8 +23,11 @@
         "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
         "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
         "Access-Control-Allow-Credentials": "true"
-      },
-      "continue": true
+      }
+    },
+    {
+      "src": "/health",
+      "dest": "server.js"
     },
     {
       "src": "/api/(.*)",
@@ -32,19 +35,27 @@
     },
     {
       "src": "/static/(.*)",
-      "dest": "/build/static/$1"
-    },
-    {
-      "src": "/favicon.ico",
-      "dest": "/build/favicon.ico"
+      "dest": "/static/$1",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
     },
     {
       "src": "/manifest.json",
-      "dest": "/build/manifest.json"
+      "dest": "/manifest.json",
+      "headers": {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache",
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/favicon.ico"
     },
     {
       "src": "/logo(.*).png",
-      "dest": "/build/logo$1.png"
+      "dest": "/logo$1.png"
     },
     {
       "handle": "filesystem"

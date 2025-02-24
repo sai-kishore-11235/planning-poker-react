@@ -46,9 +46,47 @@ let gameState = {
   story: ''
 };
 
-// Health check endpoint
+// Health check endpoints
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    socket: {
+      connected: io.engine.clientsCount,
+      rooms: io.sockets.adapter.rooms.size
+    },
+    environment: {
+      vercel: !!process.env.VERCEL,
+      vercelUrl: process.env.VERCEL_URL || 'not-set',
+      nodeEnv: process.env.NODE_ENV
+    }
+  });
+});
+
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'healthy' });
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    socketConnected: io.engine.clientsCount > 0
+  });
+});
+
+// Enhanced Socket.IO debugging
+io.engine.on("connection_error", (err) => {
+  console.log("Connection error details:", {
+    error: err.message,
+    type: err.type,
+    description: err.description,
+    context: err.context
+  });
+});
+
+io.engine.on("headers", (headers, req) => {
+  console.log("Connection headers:", headers);
+});
+
+io.engine.on("initial_headers", (headers, req) => {
+  console.log("Initial headers:", headers);
 });
 
 io.on('connection', (socket) => {
