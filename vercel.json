@@ -10,7 +10,8 @@
       "use": "@vercel/static-build",
       "config": { 
         "distDir": "build",
-        "buildCommand": "npm run vercel-build"
+        "buildCommand": "npm run vercel-build",
+        "outputDirectory": "build"
       }
     }
   ],
@@ -43,13 +44,11 @@
     },
     {
       "src": "/manifest.json",
-      "dest": "/build/manifest.json",
+      "dest": "/manifest.json",
       "headers": {
-        "Content-Type": "application/json; charset=utf-8",
+        "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        "Pragma": "no-cache",
-        "Expires": "0"
+        "Cache-Control": "public, max-age=0"
       }
     },
     {

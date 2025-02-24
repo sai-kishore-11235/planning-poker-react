@@ -160,7 +160,18 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something broke!' });
 });
 
-// Serve React app for all other routes
+// Add specific route for manifest.json
+app.get('/manifest.json', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'manifest.json'), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'public, max-age=0'
+    }
+  });
+});
+
+// Make sure this comes before the catch-all route
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
