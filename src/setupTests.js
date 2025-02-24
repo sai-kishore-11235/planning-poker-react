@@ -9,12 +9,15 @@ const mockSocket = {
 
 jest.mock('socket.io-client', () => ({
   io: jest.fn(() => mockSocket),
-  connect: jest.fn(() => mockSocket),
 }));
+
+// Make mockSocket available globally for tests
+global.__mockSocket = mockSocket;
 
 // Clear all mocks before each test
 beforeEach(() => {
   jest.clearAllMocks();
+  mockSocket.emit.mockClear();
+  mockSocket.on.mockClear();
+  mockSocket.close.mockClear();
 });
-
-export { mockSocket };
