@@ -13,10 +13,15 @@ app.use(express.static(path.join(__dirname, 'build')));
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : ["http://localhost:3000"],
+    origin: process.env.VERCEL_URL ? [
+      `https://${process.env.VERCEL_URL}`,
+      'https://planning-poker-react-puce.vercel.app'
+    ] : ["http://localhost:3000"],
     methods: ["GET", "POST"],
     credentials: true
-  }
+  },
+  path: '/socket.io',
+  transports: ['websocket', 'polling']
 });
 
 let gameState = {
@@ -100,4 +105,4 @@ if (!process.env.VERCEL) {
 }
 
 // Export for Vercel
-module.exports = app;
+module.exports = server;
