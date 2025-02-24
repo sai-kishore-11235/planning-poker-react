@@ -5,13 +5,24 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-app.use(cors());
 
-// Move this before any route handlers
+// Update CORS configuration
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  credentials: true
+}));
+
+// Add CORS headers middleware
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
   res.header('Access-Control-Allow-Headers', '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
   next();
 });
 
@@ -34,14 +45,16 @@ const server = http.createServer(app);
 const io = require('socket.io')(server, {
   cors: {
     origin: "*",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    methods: ["GET", "POST"],
     allowedHeaders: ["*"],
     credentials: true
   },
   transports: ['polling', 'websocket'],
   path: '/socket.io/',
   pingTimeout: 60000,
-  pingInterval: 25000
+  pingInterval: 25000,
+  upgradeTimeout: 30000,
+  allowUpgrades: true
 });
 
 // Log socket.io events for debugging
@@ -173,9 +186,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something broke!' });
 });
 
-// Handle both manifest files
+// Update manifest.json handler
 app.get('/manifest.json', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'manifest.json'));
+  res.sendFile(path.join(__dirname, 'build', 'manifest.json'), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'no-cache'
+    }
+  });
 });
 
 app.get('/asset-manifest.json', (req, res) => {

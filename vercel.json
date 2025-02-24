@@ -9,8 +9,7 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "build",
-        "buildCommand": "npm run build"
+        "distDir": "build"
       }
     }
   ],
@@ -21,7 +20,8 @@
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-        "Access-Control-Allow-Headers": "*"
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Credentials": "true"
       }
     },
     {
@@ -30,7 +30,13 @@
     },
     {
       "src": "/manifest.json",
-      "dest": "/build/manifest.json"
+      "dest": "/build/manifest.json",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET",
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache"
+      }
     },
     {
       "src": "/asset-manifest.json",
