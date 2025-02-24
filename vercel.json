@@ -6,65 +6,26 @@
       "use": "@vercel/node"
     },
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { 
-        "distDir": "build",
-        "buildCommand": "npm run vercel-build",
-        "outputDirectory": "build"
-      }
+      "src": "build/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/socket.io/(.*)",
-      "dest": "server.js",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-        "Access-Control-Allow-Headers": "*",
-        "Access-Control-Allow-Credentials": "true"
-      },
-      "continue": true
-    },
-    {
-      "src": "/health",
       "dest": "server.js"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "server.js"
-    },
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1",
-      "headers": {
-        "cache-control": "public, max-age=31536000, immutable"
-      }
     },
     {
       "src": "/manifest.json",
-      "dest": "/manifest.json",
       "headers": {
-        "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Cache-Control": "public, max-age=0"
-      }
-    },
-    {
-      "src": "/favicon.ico",
-      "dest": "/favicon.ico"
-    },
-    {
-      "src": "/logo(.*).png",
-      "dest": "/logo$1.png"
-    },
-    {
-      "handle": "filesystem"
+        "Content-Type": "application/json"
+      },
+      "dest": "/build/manifest.json"
     },
     {
       "src": "/(.*)",
-      "dest": "server.js"
+      "dest": "/build/$1"
     }
   ]
 }

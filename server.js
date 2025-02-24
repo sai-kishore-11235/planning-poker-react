@@ -11,24 +11,14 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'build')));
 
 const server = http.createServer(app);
-const io = new Server(server, {
+const io = require('socket.io')(server, {
   cors: {
-    origin: process.env.VERCEL_URL ? [
-      `https://${process.env.VERCEL_URL}`,
-      'https://planning-poker-react-puce.vercel.app',
-      'https://*.vercel.app'
-    ] : ["http://localhost:3000"],
+    origin: "*",
     methods: ["GET", "POST"],
+    allowedHeaders: ["*"],
     credentials: true
   },
-  path: '/socket.io',
-  transports: ['polling', 'websocket'],
-  allowEIO3: true,
-  pingTimeout: 60000,
-  pingInterval: 25000,
-  upgradeTimeout: 30000,
-  allowUpgrades: true,
-  cookie: false
+  path: '/socket.io'
 });
 
 // Log socket.io events for debugging
