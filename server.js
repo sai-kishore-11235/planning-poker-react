@@ -26,6 +26,16 @@ app.use((req, res, next) => {
   next();
 });
 
+// Add security headers middleware
+app.use((req, res, next) => {
+  res.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.header('X-Frame-Options', 'DENY');
+  res.header('X-Content-Type-Options', 'nosniff');
+  res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.header('X-XSS-Protection', '1; mode=block');
+  next();
+});
+
 // Serve static files from the React build directory
 app.use(express.static(path.join(__dirname, 'build'), {
   maxAge: '1h',
@@ -49,12 +59,13 @@ const io = require('socket.io')(server, {
     allowedHeaders: ["*"],
     credentials: true
   },
-  transports: ['polling', 'websocket'],
+  transports: ['websocket', 'polling'],
   path: '/socket.io/',
   pingTimeout: 60000,
   pingInterval: 25000,
   upgradeTimeout: 30000,
-  allowUpgrades: true
+  allowUpgrades: true,
+  cookie: false
 });
 
 // Log socket.io events for debugging
