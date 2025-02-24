@@ -184,10 +184,22 @@ app.get('/asset-manifest.json', (req, res) => {
 
 // Update the catch-all route
 app.get('*', (req, res) => {
+  console.log(`Accessing path: ${req.path}`);
   res.sendFile(path.join(__dirname, 'build', 'index.html'), {
     headers: {
       'Cache-Control': 'no-cache'
     }
+  });
+});
+
+// Add this near the top, after app initialization
+app.get('/_health', (req, res) => {
+  console.log('Health check accessed');
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    env: process.env.NODE_ENV,
+    vercel: !!process.env.VERCEL
   });
 });
 
