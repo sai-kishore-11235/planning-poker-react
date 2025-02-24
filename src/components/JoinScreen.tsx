@@ -17,7 +17,7 @@ export const JoinScreen: React.FC<JoinScreenProps> = ({ onJoin }) => {
 
   return (
     <div className="join-screen">
-      <form onSubmit={handleSubmit} role="form">
+      <form onSubmit={handleSubmit}>
         <h1>Planning Poker</h1>
         <input
           type="text"
