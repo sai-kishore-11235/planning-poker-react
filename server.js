@@ -10,7 +10,13 @@ app.use(cors());
 // Serve static files from the React build directory
 app.use(express.static(path.join(__dirname, 'build'), {
   maxAge: '1y',
-  etag: true
+  etag: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith('manifest.json')) {
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    }
+  }
 }));
 
 const server = http.createServer(app);
@@ -153,12 +159,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something broke!' });
 });
 
-// Move this route before the catch-all route
+// Update the manifest.json route handler
 app.get('/manifest.json', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'manifest.json'), {
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'no-cache',
+      'Access-Control-Allow-Methods': 'GET',
+      'X-Content-Type-Options': 'nosniff'
     }
   });
 });

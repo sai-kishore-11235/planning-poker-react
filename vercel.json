@@ -9,7 +9,8 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "build"
+        "distDir": "build",
+        "buildCommand": "npm run build"
       }
     }
   ],
@@ -19,11 +20,27 @@
       "dest": "server.js"
     },
     {
-      "src": "/api/(.*)",
-      "dest": "server.js"
+      "src": "/manifest.json",
+      "dest": "/build/manifest.json",
+      "headers": {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "public, max-age=0"
+      }
     },
     {
-      "src": "/health",
+      "src": "/static/(.*)",
+      "dest": "/build/static/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*\\.(ico|png|jpg|jpeg|gif|svg|json))",
+      "dest": "/build/$1"
+    },
+    {
+      "src": "/api/(.*)",
       "dest": "server.js"
     },
     {
